@@ -12,35 +12,51 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/hello", async (req, res) => {
-  const name = req.query.visitor_name || "User";
-  const client_ip = req.ip.includes('::ffff:') ? req.ip.split('::ffff:')[1] : req.ip;
+  try {
+    const name = req.query.visitor_name || "User";
+    const client_ip = req.ip;
 
-  // Get the location
-  const response = await getLocationDetails();
-  if (response.error) {
+    // Get the location
+    const response = await getLocationDetails(client_ip);
+    if (response.error) {
+      return res.status(500).json({
+        message: response.message,
+        data: {},
+      });
+    }
+
+    if(!response.data.city){
+      return res.status(500).json({
+        message: "Error: No location details found",
+        data: response.data,
+      });
+    }
+    const { loc, city } = response.data;
+
+    // Get the temperature of city
+    const [lat, lon] = loc.split(",");
+    const weatherResponse = await getTemperature(lat, lon);
+    if (weatherResponse.error) {
+      return res.status(500).json({
+        message: weatherResponse.message,
+        data: {},
+      });
+    }
+
+    const temperature = weatherResponse.data;
+
+    return res.json({
+      client_ip: client_ip,
+      location: city,
+      greeting: `Hello, ${name}!, the temperature is ${temperature} degrees Celcius in ${city}`,
+    });
+  } catch (error) {
+    console.error("Error: ", error);
     return res.status(500).json({
-      message: response.message,
+      message: "Internal Server Error: " + error.message,
       data: {},
     });
   }
-  const { lat, lon, city } = response.data;
-
-  // Get the temperature of city
-  const weatherResponse = await getTemperature(lat, lon);
-  if (weatherResponse.error) {
-    return res.status(500).json({
-      message: weatherResponse.message,
-      data: {},
-    });
-  }
-
-  const temperature = weatherResponse.data;
-
-  return res.json({
-    client_ip: client_ip,
-    location: city,
-    greeting: `Hello, ${name}!, the temperature is ${temperature} degrees Celcius in ${city}`,
-  });
 });
 
 app.listen(port, () => {

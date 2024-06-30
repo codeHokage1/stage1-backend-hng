@@ -8,13 +8,14 @@ const token = process.env.IPINFO_TOKEN || "";
 
 const ipinfoWrapper = new IPinfoWrapper(token);
 
-exports.getLocationDetails = async () => {
+exports.getLocationDetails = async (ip) => {
   try {
     const locationResponse = await axios.get(
-      `http://ip-api.com/json`
+      `https://ipinfo.io/${ip}?token=${process.env.IPINFO_TOKEN}`
     );
+    console.log("locationResponse: ", locationResponse.data);
     const locationData = locationResponse.data;
-    if (locationData.status !== "success") {
+    if (!locationData) {
       return {
         error: true,
         message: "Error: No location details found",

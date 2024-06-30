@@ -1,6 +1,6 @@
-import axios from "axios";
-import dotenv from "dotenv";
-import {IPinfoWrapper} from "node-ipinfo";
+const axios = require("axios"); 
+const dotenv = require("dotenv");
+const IPinfoWrapper = require("node-ipinfo").IPinfoWrapper;
 
 dotenv.config();
 
@@ -8,7 +8,7 @@ const token = process.env.IPINFO_TOKEN || "";
 
 const ipinfoWrapper = new IPinfoWrapper(token);
 
-export const getLocationDetails = async (ip) => {
+exports.getLocationDetails = async (ip) => {
   try {
     const locationDetails = await ipinfoWrapper.lookupIp(ip);
     if (!locationDetails) {
@@ -34,7 +34,7 @@ export const getLocationDetails = async (ip) => {
   }
 };
 
-export const getTemperature = async (lat, long) => {
+exports.getTemperature = async (lat, long) => {
   try {
     const weatherResponse = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`

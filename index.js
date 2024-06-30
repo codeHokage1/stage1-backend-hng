@@ -1,7 +1,6 @@
-import express from "express";
-import dotenv from "dotenv";
-import serverless from "serverless-http";
-import { getLocationDetails, getTemperature } from "./helper_functions.js";
+const express = require("express");
+const dotenv = require("dotenv");
+const { getLocationDetails, getTemperature } = require("./helper_functions");
 
 dotenv.config();
 
@@ -48,3 +47,5 @@ app.get("/api/hello", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
+module.exports = app;

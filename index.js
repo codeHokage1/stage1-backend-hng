@@ -13,21 +13,20 @@ app.get("/", (req, res) => {
 
 app.get("/api/hello", async (req, res) => {
   const name = req.query.visitor_name || "User";
-  const client_ip = req.ip || "";
+  const client_ip = req.ip.includes('::ffff:') ? req.ip.split('::ffff:')[1] : req.ip;
 
   // Get the location
-  const response = await getLocationDetails(client_ip);
+  const response = await getLocationDetails();
   if (response.error) {
     return res.status(500).json({
       message: response.message,
       data: {},
     });
   }
-  const { city, region, country, loc } = response.data;
+  const { lat, lon, city } = response.data;
 
   // Get the temperature of city
-  const [lat, long] = loc.split(",");
-  const weatherResponse = await getTemperature(lat, long);
+  const weatherResponse = await getTemperature(lat, lon);
   if (weatherResponse.error) {
     return res.status(500).json({
       message: weatherResponse.message,
@@ -47,5 +46,3 @@ app.get("/api/hello", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
-
-module.exports = app;

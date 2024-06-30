@@ -1,4 +1,4 @@
-const axios = require("axios"); 
+const axios = require("axios");
 const dotenv = require("dotenv");
 const IPinfoWrapper = require("node-ipinfo").IPinfoWrapper;
 
@@ -8,22 +8,23 @@ const token = process.env.IPINFO_TOKEN || "";
 
 const ipinfoWrapper = new IPinfoWrapper(token);
 
-exports.getLocationDetails = async (ip) => {
+exports.getLocationDetails = async () => {
   try {
-    const locationDetails = await ipinfoWrapper.lookupIp(ip);
-    if (!locationDetails) {
+    const locationResponse = await axios.get(
+      `http://ip-api.com/json`
+    );
+    const locationData = locationResponse.data;
+    if (locationData.status !== "success") {
       return {
         error: true,
         message: "Error: No location details found",
         data: null,
       };
     }
-
-    console.log(locationDetails);
     return {
       error: false,
       message: "Success: Location details found",
-      data: locationDetails,
+      data: locationData,
     };
   } catch (error) {
     return {

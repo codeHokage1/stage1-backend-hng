@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const { getLocationDetails, getTemperature } = require("./helper_functions");
 
+var Address6 = require("ip-address").Address6;
+
 dotenv.config();
 
 const app = express();
@@ -15,9 +17,11 @@ app.get("/api/hello", async (req, res) => {
   try {
     const name = req.query.visitor_name || "User";
     const client_ip = req.ip;
+    var address = new Address6(client_ip);
+    var teredo = address.inspectTeredo();
 
     // Get the location
-    const response = await getLocationDetails(client_ip);
+    const response = await getLocationDetails(teredo.client4);
     if (response.error) {
       return res.status(500).json({
         message: response.message,
@@ -25,7 +29,7 @@ app.get("/api/hello", async (req, res) => {
       });
     }
 
-    if(!response.data.city){
+    if (!response.data.city) {
       return res.status(500).json({
         message: "Error: No location details found",
         data: response.data,
@@ -46,7 +50,7 @@ app.get("/api/hello", async (req, res) => {
     const temperature = weatherResponse.data;
 
     return res.json({
-      client_ip: client_ip,
+      client_ip: teredo.client4,
       location: city,
       greeting: `Hello, ${name}!, the temperature is ${temperature} degrees Celcius in ${city}`,
     });

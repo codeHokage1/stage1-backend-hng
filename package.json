@@ -14,11 +14,7 @@
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "ip": "^2.0.1",
-    "ip-address": "^9.0.5",
-    "node-ipinfo": "^3.5.1",
-    "openweather-apis": "^4.5.0",
-    "serverless-http": "^3.2.0"
+    "openweather-apis": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",

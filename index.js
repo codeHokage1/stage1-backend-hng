@@ -25,8 +25,6 @@ app.get("/api/hello", async (req, res) => {
     clientIp = clientIp.replace("::ffff:", ""); // Remove '::ffff:' from IPv6-mapped IPv4 address
     clientIp = clientIp.split(",")[0]; // Get the first IP address if there are multiple
 
-    console.log("Client IP: ", clientIp);
-
     // Check if the IP address is private
     if (isPrivateIp(clientIp)) {
       return res.json({

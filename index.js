@@ -1,8 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const { getLocationDetails, getTemperature } = require("./helper_functions");
-
-var Address6 = require("ip-address").Address6;
+const { getLocationDetails, getTemperature, isPrivateIp } = require("./helper_functions");
 
 dotenv.config();
 
@@ -16,12 +14,25 @@ app.get("/", (req, res) => {
 app.get("/api/hello", async (req, res) => {
   try {
     const name = req.query.visitor_name || "User";
-    const client_ip = req.ip;
-    var address = new Address6(client_ip);
-    var teredo = address.inspectTeredo();
+
+    // Get client IP address
+    let clientIp =
+      req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    clientIp = clientIp.replace("::ffff:", ""); // Remove '::ffff:' from IPv6-mapped IPv4 address
+
+    console.log("Client IP: ", clientIp);
+
+    // Check if the IP address is private
+    if (isPrivateIp(clientIp)) {
+      return res.json({
+        client_ip: clientIp,
+        location: "Local Network",
+        greeting: `Hello, ${name}! You are accessing from a local network.`,
+      });
+    }
 
     // Get the location
-    const response = await getLocationDetails(teredo.client4);
+    const response = await getLocationDetails(clientIp);
     if (response.error) {
       return res.status(500).json({
         message: response.message,
@@ -50,7 +61,7 @@ app.get("/api/hello", async (req, res) => {
     const temperature = weatherResponse.data;
 
     return res.json({
-      client_ip: teredo.client4,
+      client_ip: clientIp,
       location: city,
       greeting: `Hello, ${name}!, the temperature is ${temperature} degrees Celcius in ${city}`,
     });

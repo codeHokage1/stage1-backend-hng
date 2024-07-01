@@ -14,6 +14,12 @@ exports.getLocationDetails = async (ip) => {
       `https://ipinfo.io/${ip}?token=${process.env.IPINFO_TOKEN}`
     );
     console.log("locationResponse: ", locationResponse.data);
+
+    const locationRes2 = await axios.get(
+      `http://ip-api.com/json/${ip}`
+    );
+    console.log("locationRes2: ", locationRes2.data);
+
     const locationData = locationResponse.data;
     if (!locationData) {
       return {
@@ -64,3 +70,7 @@ exports.getTemperature = async (lat, long) => {
     };
   }
 };
+
+exports.isPrivateIp = (ip) => {
+  return /^(127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2[0-9]|3[01])\.\d+\.\d+)$/.test(ip);
+}

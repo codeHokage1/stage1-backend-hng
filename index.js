@@ -1,6 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const { getLocationDetails, getTemperature, isPrivateIp } = require("./helper_functions");
+const {
+  getLocationDetails,
+  getTemperature,
+  isPrivateIp,
+} = require("./helper_functions");
 
 dotenv.config();
 
@@ -19,6 +23,7 @@ app.get("/api/hello", async (req, res) => {
     let clientIp =
       req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     clientIp = clientIp.replace("::ffff:", ""); // Remove '::ffff:' from IPv6-mapped IPv4 address
+    clientIp = clientIp.split(",")[0]; // Get the first IP address if there are multiple
 
     console.log("Client IP: ", clientIp);
 

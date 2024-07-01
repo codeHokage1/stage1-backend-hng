@@ -49,10 +49,11 @@ app.get("/api/hello", async (req, res) => {
         data: response.data,
       });
     }
-    const { loc, city } = response.data;
+    // const { loc, city } = response.data;
+    const {lat, lon, city} = response.data;
 
     // Get the temperature of city
-    const [lat, lon] = loc.split(",");
+    // const [lat, lon] = loc.split(",");
     const weatherResponse = await getTemperature(lat, lon);
     if (weatherResponse.error) {
       return res.status(500).json({

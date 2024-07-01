@@ -6,10 +6,16 @@ dotenv.config();
 const token = process.env.IPINFO_TOKEN || "";
 exports.getLocationDetails = async (ip) => {
   try {
-    const locationResponse = await axios.get(
-      `https://ipinfo.io/${ip}?token=${process.env.IPINFO_TOKEN}`
-    );
-    const locationData = locationResponse.data;
+    // const locationResponse = await axios.get(
+    //   `https://ipinfo.io/${ip}?token=${process.env.IPINFO_TOKEN}`
+    // );
+    // const locationData = locationResponse.data;
+    // console.log("Location Response 1: ", locationData)
+
+    const lcoationResponse2 = await axios.get(`http://ip-api.com/json/${ip}`);
+    const locationData = lcoationResponse2.data;
+    console.log("Location Response 2: ", lcoationResponse2.data);
+    
     if (!locationData) {
       return {
         error: true,
